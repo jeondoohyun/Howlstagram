@@ -1,0 +1,5 @@
+-- firebase 연결
+1. authentication
+* tool탭 > firebase > authentication 클릭
+* connect to your app 클릭후 firebase사이트에서 프로젝트 생성후 안드로이드 스튜디오와 연결
+* 코드에서 회원가입 및 로그인 코드를 작성후 firebase 콘솔 화면(웹페이지)에서 email사용을 허용 하면 회원가입이 완료되면 유저 정보가 firebase에 저장된다.
