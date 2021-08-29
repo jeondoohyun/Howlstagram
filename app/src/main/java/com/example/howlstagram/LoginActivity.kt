@@ -4,6 +4,7 @@ import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.text.TextUtils
 import android.util.Base64
 import android.util.Log
 import android.widget.Toast
@@ -153,11 +154,12 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun signInAndSignup() {
-        auth?.createUserWithEmailAndPassword(email_edittext.text.toString(), password_edittext.text.toString())?.addOnCompleteListener { it ->
+        if ( !TextUtils.isEmpty(email_edittext?.text.toString()) && !TextUtils.isEmpty(password_edittext?.text.toString())) {
+            auth?.createUserWithEmailAndPassword(email_edittext?.text.toString(), password_edittext?.text.toString())?.addOnCompleteListener { it ->
                 if (it.isSuccessful) {
                     // 아이디가 생성이 완료 되었을때
                     moveMainPage(it.result?.user)
-                } else if (!it.exception?.message.isNullOrEmpty()) {
+                } else if (it.exception?.message.isNullOrEmpty()) {
                     // 아이디가 생성되지 않았을때
 //                    Toast.makeText(this, it.exception?.message,Toast.LENGTH_SHORT).show()
                     Toast.makeText(this, "이메일 및 비밀번호를 확인하세요.", Toast.LENGTH_SHORT).show()
@@ -166,7 +168,11 @@ class LoginActivity : AppCompatActivity() {
                     // 회원가입도 아니고 에러도 안났을때 > 로그인일때
                     signInEmail()
                 }
+            }
+        } else {
+            Toast.makeText(this, "이메일, 비밀번호를 입력하세요.", Toast.LENGTH_SHORT).show()
         }
+
     }
 
     fun signInEmail() {
@@ -176,7 +182,8 @@ class LoginActivity : AppCompatActivity() {
                 moveMainPage(it.result?.user)
             } else {
                 // 아이디 or 비밀번호가 틀렸을때
-                Toast.makeText(this, it.exception?.message, Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this, it.exception?.message, Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "이메일 또는 비밀번호를 확인하세요.", Toast.LENGTH_SHORT).show()
             }
         }
     }
