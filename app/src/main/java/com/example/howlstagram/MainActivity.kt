@@ -6,17 +6,23 @@ import android.content.pm.PackageManager
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.MenuItem
-import androidx.core.app.ActivityCompat
+import com.example.howlstagram.databinding.ActivityMainBinding
 import com.example.howlstagram.navigation.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
+    private var mBinding: ActivityMainBinding? = null
+    private val binding get() = mBinding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        bottom_navigation.setOnNavigationItemSelectedListener(this)
-        requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+        mBinding = ActivityMainBinding.inflate(layoutInflater)
+//        setContentView(R.layout.activity_main)
+        setContentView(binding.root)
+        binding.bottomNavigation.setOnNavigationItemSelectedListener(this)
+        
+        
+        requestPermissions(arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE), 1)   // 권한 요청
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {

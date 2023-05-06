@@ -8,7 +8,7 @@
 
 - firebase storage : 서버에 이미지 올릴수 있음
 - firestore : 서버에 있는 데이터를 체계적으로 관리(데이터베이스)
-firebase 콘솔 firestore 규칙 탭에 들어가서 allow read, write: if request.auth.uid != null로 변경(auth.uid가 null이 아닐때만 접근 동작하도록 하는것)
+firebase 콘솔 firestore Database 규칙 탭에 들어가서 allow read, write: if request.auth.uid != null로 변경(auth.uid가 null이 아닐때만 접근 동작하도록 하는것)
 
 
 ------------ 개발 순서

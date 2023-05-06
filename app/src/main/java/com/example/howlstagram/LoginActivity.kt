@@ -9,6 +9,7 @@ import android.util.Base64
 import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import com.example.howlstagram.databinding.ActivityLoginBinding
 import com.facebook.AccessToken
 import com.facebook.CallbackManager
 import com.facebook.FacebookCallback
@@ -24,7 +25,6 @@ import com.google.firebase.auth.FacebookAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
-import kotlinx.android.synthetic.main.activity_login.*
 import java.security.MessageDigest
 import java.security.NoSuchAlgorithmException
 import java.util.*
@@ -55,9 +55,13 @@ class LoginActivity : AppCompatActivity() {
     var GOOGLE_LOGIN_CODE = 9001
     var callbackManager : CallbackManager? = null   // facebook 로그인 결과를 가져오는 콜백매니저
 
+    private var mBinding: ActivityLoginBinding? = null
+    private val binding get() = mBinding!!
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_login)
+        mBinding = ActivityLoginBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         auth = FirebaseAuth.getInstance()
 
 //        if (auth?.currentUser != null) {
@@ -67,15 +71,15 @@ class LoginActivity : AppCompatActivity() {
 //            finish()
 //        }
 
-        email_login_button.setOnClickListener {
+        binding.emailLoginButton.setOnClickListener {
             signInAndSignup()
         }
 
-        google_sign_in_button.setOnClickListener {
+        binding.googleSignInButton.setOnClickListener {
             googleLogin()
         }
 
-        facebook_login_button.setOnClickListener {
+        binding.facebookLoginButton.setOnClickListener {
             facebookLogin()
         }
 
@@ -124,9 +128,11 @@ class LoginActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         callbackManager?.onActivityResult(requestCode, resultCode, data)
+        Log.e("구글로그인","$requestCode")
         if (requestCode == GOOGLE_LOGIN_CODE) {
-            var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data)   // 구글에서 넘겨 주는 로그인 결과값 받기
-            if(result.isSuccess){   // 응답 받은 결과값이 성공 했을때
+            var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data!!)   // 구글에서 넘겨 주는 로그인 결과값 받기
+            Log.e("구글로그인_2","${result!!.isSuccess}, $data")
+            if(result!!.isSuccess){   // 응답 받은 결과값이 성공 했을때      // todo : 응답 값 false 뜸, 수정 할것
                 var account = result.signInAccount
                 firebaseAuthWithGoogle(account)
             }
@@ -154,8 +160,8 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun signInAndSignup() {
-        if ( !TextUtils.isEmpty(email_edittext?.text.toString()) && !TextUtils.isEmpty(password_edittext?.text.toString())) {
-            auth?.createUserWithEmailAndPassword(email_edittext?.text.toString(), password_edittext?.text.toString())?.addOnCompleteListener { it ->
+        if ( !TextUtils.isEmpty(binding.emailEdittext?.text.toString()) && !TextUtils.isEmpty(binding.passwordEdittext?.text.toString())) {
+            auth?.createUserWithEmailAndPassword(binding.emailEdittext?.text.toString(), binding.passwordEdittext?.text.toString())?.addOnCompleteListener { it ->
                 if (it.isSuccessful) {
                     // 아이디가 생성이 완료 되었을때
                     moveMainPage(it.result?.user)
@@ -176,7 +182,7 @@ class LoginActivity : AppCompatActivity() {
     }
 
     fun signInEmail() {
-        auth?.signInWithEmailAndPassword(email_edittext.text.toString(), password_edittext.text.toString())?.addOnCompleteListener { it ->
+        auth?.signInWithEmailAndPassword(binding.emailEdittext.text.toString(), binding.passwordEdittext.text.toString())?.addOnCompleteListener { it ->
             if (it.isSuccessful) {
                 // 로그인이 성공하였을때
                 moveMainPage(it.result?.user)
