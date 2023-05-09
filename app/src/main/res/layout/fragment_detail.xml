@@ -5,8 +5,8 @@
     android:layout_height="match_parent"
     android:background="#AA2244">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:layout_width=""
-        android:layout_height=""
+<!--    <androidx.recyclerview.widget.RecyclerView-->
+<!--        android:layout_width=""-->
+<!--        android:layout_height=""-->
 
 </LinearLayout>
