@@ -5,6 +5,8 @@
       <map>
         <entry key="..\:/CodingFiles/AndroidProjects/HowInstagram/app/src/main/res/layout/activity_add_photo.xml" value="0.33" />
         <entry key="..\:/CodingFiles/AndroidProjects/HowInstagram/app/src/main/res/layout/activity_main.xml" value="0.26614583333333336" />
+        <entry key="..\:/CodingFiles/AndroidProjects/HowInstagram/app/src/main/res/layout/fragment_detail.xml" value="0.26614583333333336" />
+        <entry key="..\:/CodingFiles/AndroidProjects/HowInstagram/app/src/main/res/layout/item_detail.xml" value="0.26510416666666664" />
       </map>
     </option>
   </component>
