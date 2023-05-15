@@ -132,7 +132,7 @@ class LoginActivity : AppCompatActivity() {
         if (requestCode == GOOGLE_LOGIN_CODE) {
             var result = Auth.GoogleSignInApi.getSignInResultFromIntent(data!!)   // 구글에서 넘겨 주는 로그인 결과값 받기
             Log.e("구글로그인_2","${result!!.isSuccess}, $data")
-            if(result!!.isSuccess){   // 응답 받은 결과값이 성공 했을때      // todo : 응답 값 false 뜸, 수정 할것
+            if(result!!.isSuccess){   // 응답 받은 결과값이 성공 했을때      // todo : 응답 값 false 뜸, 수정 할것, 네비게이션바 클릭된 아이콘 연하게 되있는데 진하게 처리하기
                 var account = result.signInAccount
                 firebaseAuthWithGoogle(account)
             }

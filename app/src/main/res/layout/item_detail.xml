@@ -20,7 +20,8 @@
             android:id="@+id/detailviewitem_profile_textview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="User name"/>
+            android:text="User name"
+            android:layout_gravity="center_vertical"/>
 
     </LinearLayout>
 
