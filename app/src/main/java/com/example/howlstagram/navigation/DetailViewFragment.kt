@@ -14,12 +14,14 @@ import com.example.howlstagram.R
 import com.example.howlstagram.databinding.ActivityMainBinding
 import com.example.howlstagram.databinding.FragmentDetailBinding
 import com.example.howlstagram.navigation.model.ContentDTO
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class DetailViewFragment : Fragment{
     constructor() : super()
 
     var firestore : FirebaseFirestore? = null
+    var uid : String? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 //        var view = LayoutInflater.from(activity).inflate(R.layout.fragment_detail, container, false)
@@ -27,6 +29,8 @@ class DetailViewFragment : Fragment{
         // Fragment binding 하는법
         val binding = FragmentDetailBinding.inflate(inflater, container, false)
         firestore = FirebaseFirestore.getInstance()
+
+        uid = FirebaseAuth.getInstance().currentUser?.uid       // 게시물을 식별 하는 uid?
 
         binding.detailviewfragmentRecyclerview.adapter = DetailViewRecyclerViewAdapter()
         binding.detailviewfragmentRecyclerview.layoutManager = LinearLayoutManager(activity)
@@ -89,12 +93,42 @@ class DetailViewFragment : Fragment{
             //ProfileImage
             Glide.with(viewholder.itemView.context).load(contentDTOs!![position].imageUrl).into(viewholder.detailviewitem_profile_image)    // url주소 아직 적용안됨
 
+            // 좋아요 버튼에 이벤트 달기
+            viewholder.detailviewitem_favorite_imageview.setOnClickListener {
+                favoriteEvent(position)
+            }
 
+            // 예전에 내가 눌렀던 좋아요면 화면에 바로 좋아요 이미지가 표시되게끔 처리 해주기
+            if (contentDTOs!![position].favorites.containsKey(uid)) {   // favorites 맵 리스트에 uid 게시물이 포함되어 있다는것은 내가 좋아요를 눌렀던 게시물이라는것
+                viewholder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite)       // todo : 좋아요 눌렀을때 이미지 바뀌는게 너무 느림
+            } else {
+                viewholder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite_border)
+            }
 
         }
 
         override fun getItemCount(): Int {
             return contentDTOs.size
+        }
+
+        fun favoriteEvent(position : Int) {
+            var tsDoc = firestore?.collection("images")?.document(contentUidList[position])     // 내가 선택한 게시물(컨텐츠)의 uid를 받아와서 좋아요 눌러주는 이벤트
+            
+            // 데이터를 불러 오기 위해서는 Transaction을 불러 와야함
+            firestore?.runTransaction {
+                var contentDTO = it.get(tsDoc!!).toObject(ContentDTO::class.java)   // ContentDTO로 캐스팅
+
+                if (contentDTO!!.favorites.containsKey(uid)) {  // 게시물의 좋아요가 눌러져 있는 상태일경우
+                    contentDTO?.favoriteCount = contentDTO?.favoriteCount - 1
+                    contentDTO?.favorites.remove(uid)   // 내가 좋아요 누른 게시물의 리스트. 좋아요 해제 한거니까 리스트에서도 해당 uid를 뺀다
+                } else {    // 좋아요가 안눌러져 있는경우
+                    contentDTO?.favoriteCount = contentDTO?.favoriteCount + 1
+                    contentDTO?.favorites[uid!!] = true
+                }
+                it.set(tsDoc, contentDTO)   // 이벤트 완료 한후 transaction을 서버로 다시 보낸다
+
+            }
+
         }
 
     }
