@@ -26,8 +26,9 @@ class DetailViewFragment : Fragment{
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 //        var view = LayoutInflater.from(activity).inflate(R.layout.fragment_detail, container, false)
 
-        // Fragment binding 하는법
+        // Fragment binding 하는법, layout중에 fragment_detail 바인딩
         val binding = FragmentDetailBinding.inflate(inflater, container, false)
+
         firestore = FirebaseFirestore.getInstance()
 
         uid = FirebaseAuth.getInstance().currentUser?.uid       // 게시물을 식별 하는 uid?
@@ -39,19 +40,20 @@ class DetailViewFragment : Fragment{
         return binding.root
     }
 
+    // fragment_detail layout에 있는 recyclerView에서 사용할 어댑터 만들기
     inner class DetailViewRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         var contentDTOs : ArrayList<ContentDTO> = arrayListOf()
         var contentUidList : ArrayList<String> = arrayListOf()
 
         init {
-
-
             firestore?.collection("images")?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, error ->
                 contentDTOs.clear()
                 contentUidList.clear()
+                
+                // 서버로 부터 데이터 받기
                 for (snapshot in querySnapshot!!.documents) {
-                    var item = snapshot.toObject(ContentDTO::class.java)
+                    var item = snapshot.toObject(ContentDTO::class.java)    // 받아온 querySnapshot documents 값을 ContentDTO로 캐스팅
                     contentDTOs.add(item!!)
                     contentUidList.add(snapshot.id)
                 }

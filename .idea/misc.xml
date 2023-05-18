@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
@@ -5,7 +6,9 @@
         <entry key="..\:/CodingFiles/AndroidProjects/HowInstagram/app/src/main/res/layout/activity_add_photo.xml" value="0.33" />
         <entry key="..\:/CodingFiles/AndroidProjects/HowInstagram/app/src/main/res/layout/activity_main.xml" value="0.26614583333333336" />
         <entry key="..\:/CodingFiles/AndroidProjects/HowInstagram/app/src/main/res/layout/fragment_detail.xml" value="0.26614583333333336" />
+        <entry key="..\:/CodingFiles/AndroidProjects/HowInstagram/app/src/main/res/layout/fragment_user.xml" value="0.353125" />
         <entry key="..\:/CodingFiles/AndroidProjects/HowInstagram/app/src/main/res/layout/item_detail.xml" value="0.26510416666666664" />
+        <entry key="..\:/CodingFiles/AndroidProjects/HowInstagram/app/src/main/res/menu/bottom_navigation_main.xml" value="0.353125" />
       </map>
     </option>
   </component>

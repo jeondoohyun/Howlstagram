@@ -9,6 +9,7 @@ import android.view.MenuItem
 import com.example.howlstagram.databinding.ActivityMainBinding
 import com.example.howlstagram.navigation.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseAuth
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     private var mBinding: ActivityMainBinding? = null
@@ -52,6 +53,13 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
             }
             R.id.action_account -> {
                 var userFragment = UserFragment()
+
+                // 화면 전환 될때 uid값 넘겨주기
+                var bundle = Bundle()
+                var uid = FirebaseAuth.getInstance().currentUser?.uid
+                bundle.putString("destinationUid", uid)
+                userFragment.arguments = bundle
+
                 supportFragmentManager.beginTransaction().replace(R.id.main_content, userFragment).commit()   // main_content에 detailViewFragment를 띄운다.
                 return true
             }
