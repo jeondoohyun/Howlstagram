@@ -91,6 +91,13 @@ class LoginActivity : AppCompatActivity() {
         callbackManager = CallbackManager.Factory.create()
     }
 
+    override fun onStart() {
+        super.onStart()
+        moveMainPage(auth?.currentUser)  //자동 로그인, 아이디랑 비밀번호 확인하는것은 아니고 여기선 그냥 무조건 자동 로그인, currentUser값이 com.google.firebase.auth.internal.zzx@d5d3be5 이런식으로 뜨는데 매번 바뀜
+
+        Log.e("유저확인","${auth?.currentUser}")
+    }
+
     fun facebookLogin() {
         LoginManager.getInstance()
                 .logInWithReadPermissions(this, Arrays.asList("public_profile","email"))    // 페이스북에 권한 요청(프로필 이미지랑, 이메일을 요청)
@@ -197,6 +204,7 @@ class LoginActivity : AppCompatActivity() {
     fun moveMainPage(user: FirebaseUser?) {
         if (user != null) {
             startActivity(Intent(this, MainActivity::class.java))
+            finish()
         }
     }
 

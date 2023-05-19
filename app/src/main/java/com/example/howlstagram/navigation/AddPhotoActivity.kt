@@ -16,6 +16,8 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class AddPhotoActivity : AppCompatActivity() {
+    // 사진 및 게시글을 서버로 업로드 하는 화면
+    
     var PICK_IMAGE_FROM_ALBUM = 0;
     var storage : FirebaseStorage? = null
     var photoUri : Uri? = null
@@ -51,9 +53,9 @@ class AddPhotoActivity : AppCompatActivity() {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == PICK_IMAGE_FROM_ALBUM) {
             if (resultCode == Activity.RESULT_OK) {
-                // 사진을 선택 했을때 이미지의 경로가 넘어옴
+                // 사진을 선택 했을때 이미지의 경로가 넘어옴, 경로에는 사진이 있음
                 photoUri = data?.data   // 경로
-                binding.addphotoImage.setImageURI(photoUri)
+                binding.addphotoImage.setImageURI(photoUri) // 경로로 이미지뷰에 사진 띄우기
             } else {
                 // 사진을 선택 하지 않고 취소를 눌렀을때
                 finish()
