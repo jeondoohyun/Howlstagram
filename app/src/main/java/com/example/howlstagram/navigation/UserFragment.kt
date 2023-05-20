@@ -1,5 +1,6 @@
 package com.example.howlstagram.navigation
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.howlstagram.LoginActivity
+import com.example.howlstagram.MainActivity
 import com.example.howlstagram.R
 import com.example.howlstagram.databinding.ActivityMainBinding
 import com.example.howlstagram.databinding.FragmentDetailBinding
@@ -26,10 +29,11 @@ class UserFragment : Fragment{
     private var mBinding: FragmentUserBinding? = null
     private val binding get() = mBinding!!
 
-    var fragmentView : View? = null
+//    var fragmentView : View? = null
     var firestore : FirebaseFirestore? = null
     var uid : String? = null
     var auth : FirebaseAuth? = null
+    var currentUserUid : String? = null     // 내 계정인지 상대방 계정인지 판단하는 데이터
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 //        fragmentView = LayoutInflater.from(activity).inflate(R.layout.fragment_user, container, false)
@@ -41,6 +45,21 @@ class UserFragment : Fragment{
         Log.e("로그확인","$uid")
         firestore = FirebaseFirestore.getInstance()
         auth = FirebaseAuth.getInstance()
+        currentUserUid = auth?.currentUser?.uid
+
+        if(uid == currentUserUid) {     // 같을때는 나의 userFragment페이지
+            binding.accountBtnFollowSignout?.text = getString(R.string.signout)
+            binding.accountBtnFollowSignout?.setOnClickListener {
+                activity?.finish()
+                startActivity(Intent(activity, LoginActivity::class.java))
+                auth?.signOut()  // 파이어베이스 auth 값에 signout을 전송함
+            }
+
+        } else {        // 상대방 userFragment페이지
+            binding.accountBtnFollowSignout?.text = getString(R.string.follow)
+            var mainactivity = (activity as MainActivity)
+            mainactivity?.binding.toolbarUsername?.text = arguments?.getString("userId")        // todo
+        }
 
         binding.accountRecyclerview.adapter = UserFragmentRecyclerViewAdapter()
         binding.accountRecyclerview.layoutManager = GridLayoutManager(activity, 3)
