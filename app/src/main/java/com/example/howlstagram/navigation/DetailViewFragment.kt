@@ -50,6 +50,8 @@ class DetailViewFragment : Fragment{
             firestore?.collection("images")?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, error ->
                 contentDTOs.clear()
                 contentUidList.clear()
+
+                if (querySnapshot == null) return@addSnapshotListener
                 
                 // 서버로 부터 데이터 받기
                 for (snapshot in querySnapshot!!.documents) {
@@ -105,6 +107,16 @@ class DetailViewFragment : Fragment{
                 viewholder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite)       // todo : 좋아요 눌렀을때 이미지 바뀌는게 너무 느림
             } else {
                 viewholder.detailviewitem_favorite_imageview.setImageResource(R.drawable.ic_favorite_border)
+            }
+
+            // profile image를 클릭 하였을때
+            viewholder.detailviewitem_profile_image.setOnClickListener {
+                var fragment = UserFragment()
+                var bundle = Bundle()
+                bundle.putString("destinationUid", contentDTOs[position].uid)
+                bundle.putString("userId", contentDTOs[position].userId)
+                fragment.arguments = bundle
+                activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content, fragment)?.commit()
             }
 
         }

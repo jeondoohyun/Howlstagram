@@ -16,8 +16,6 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.howlstagram.LoginActivity
 import com.example.howlstagram.MainActivity
 import com.example.howlstagram.R
-import com.example.howlstagram.databinding.ActivityMainBinding
-import com.example.howlstagram.databinding.FragmentDetailBinding
 import com.example.howlstagram.databinding.FragmentUserBinding
 import com.example.howlstagram.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
@@ -58,7 +56,13 @@ class UserFragment : Fragment{
         } else {        // 상대방 userFragment페이지
             binding.accountBtnFollowSignout?.text = getString(R.string.follow)
             var mainactivity = (activity as MainActivity)
-            mainactivity?.binding.toolbarUsername?.text = arguments?.getString("userId")        // todo
+            mainactivity?.binding.toolbarUsername?.text = arguments?.getString("userId")
+            mainactivity?.binding.toolbarBtnBack?.setOnClickListener {
+                mainactivity.binding.bottomNavigation.selectedItemId = R.id.action_home     // 바텀 네비게이션이 홈이 눌려지게 처리
+            }
+            mainactivity?.binding.toolbarTitleImage?.visibility = View.GONE
+            mainactivity?.binding.toolbarUsername?.visibility = View.VISIBLE
+            mainactivity?.binding.toolbarBtnBack?.visibility = View.VISIBLE
         }
 
         binding.accountRecyclerview.adapter = UserFragmentRecyclerViewAdapter()
