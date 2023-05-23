@@ -11,6 +11,8 @@ import com.example.howlstagram.databinding.ActivityMainBinding
 import com.example.howlstagram.navigation.*
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
 
 class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemSelectedListener {
     private var mBinding: ActivityMainBinding? = null
@@ -73,5 +75,26 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         binding.toolbarUsername.visibility = View.GONE
         binding.toolbarBtnBack.visibility = View.GONE
         binding.toolbarTitleImage.visibility = View.VISIBLE
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+
+        // Fragment화면을 띄우는 틀이 되는 화면은 MainActivity이기 때문에 여기서 onActivityResult 오버라이드 함수를 만든다.
+        if (requestCode == UserFragment.PICK_PROFILE_FROM_ALBUM &&
+                resultCode == RESULT_OK) {
+            var imageUri = data?.data   // 사진경로(경로에 있는 사진을 꺼내오는것과 같은것)
+            var uid = FirebaseAuth.getInstance().currentUser?.uid
+
+            // 사진 서버저장
+            var storageRef = FirebaseStorage.getInstance().reference.child("userProfileImages").child(uid!!)    // 파이어베이스 storage에 저장
+            storageRef.putFile(imageUri!!).continueWithTask {
+                return@continueWithTask storageRef.downloadUrl
+            }.addOnSuccessListener {
+                var map = HashMap<String, Any>()
+                map["image"] = it.toString()
+                FirebaseFirestore.getInstance().collection("profileImages").document(uid).set(map)  // 파이어베이스 database에 저장
+            }
+        }
     }
 }

@@ -18,6 +18,7 @@ import com.example.howlstagram.MainActivity
 import com.example.howlstagram.R
 import com.example.howlstagram.databinding.FragmentUserBinding
 import com.example.howlstagram.navigation.model.ContentDTO
+import com.example.howlstagram.navigation.model.FollowDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -29,9 +30,14 @@ class UserFragment : Fragment{
 
 //    var fragmentView : View? = null
     var firestore : FirebaseFirestore? = null
-    var uid : String? = null
+    var uid : String? = null    // uid가 계정마다 고유한 값인가??
     var auth : FirebaseAuth? = null
     var currentUserUid : String? = null     // 내 계정인지 상대방 계정인지 판단하는 데이터
+
+    // static 변수 선언
+    companion object {
+        var PICK_PROFILE_FROM_ALBUM = 10
+    }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
 //        fragmentView = LayoutInflater.from(activity).inflate(R.layout.fragment_user, container, false)
@@ -63,12 +69,90 @@ class UserFragment : Fragment{
             mainactivity?.binding.toolbarTitleImage?.visibility = View.GONE
             mainactivity?.binding.toolbarUsername?.visibility = View.VISIBLE
             mainactivity?.binding.toolbarBtnBack?.visibility = View.VISIBLE
+            binding.accountBtnFollowSignout?.setOnClickListener {
+                requestFollow()
+            }
         }
 
         binding.accountRecyclerview.adapter = UserFragmentRecyclerViewAdapter()
         binding.accountRecyclerview.layoutManager = GridLayoutManager(activity, 3)
 
+        // 프로필 사진 클릭 했을때 사진첩에서 사진 고르기
+        binding.accountIvProfile.setOnClickListener {
+            var photoPickerIntent = Intent(Intent.ACTION_PICK)
+            photoPickerIntent.type = "image/*"
+            activity?.startActivityForResult(photoPickerIntent, PICK_PROFILE_FROM_ALBUM)
+
+        }
+        getProfileImage()
         return binding.root
+    }
+
+    fun requestFollow() {
+        // 내가 하는 팔로잉
+        var tsDocFollowing = firestore?.collection("users")?.document(currentUserUid!!)
+        firestore?.runTransaction {
+            var followDTO = it.get(tsDocFollowing!!).toObject(FollowDTO::class.java)    // FollowDTO로 캐스팅
+            if (followDTO == null) {
+                followDTO = FollowDTO()
+                followDTO!!.followingCount = 1  // 최초 값이기 때문에 1이다
+                followDTO!!.followers[uid!!] = true
+
+                it.set(tsDocFollowing, followDTO)   // 파이어베이스 db로 저장
+                return@runTransaction
+            }
+
+            if (followDTO.followings.containsKey(uid)) {
+                // 내가 팔로우 한 상태이기 때문에 팔로잉을 해제
+                followDTO?.followingCount = followDTO?.followingCount - 1
+                followDTO?.followers?.remove(uid)   // 해당 uid를 리스트에서 삭제
+            } else {
+                // 팔로우 안한 상태라 팔로잉 하는 상태로 변경
+                followDTO?.followingCount = followDTO?.followingCount + 1
+                followDTO?.followers[uid!!] = true  // 리스트에 해당 uid 키 값에 대해 true로 저장
+            }
+            it.set(tsDocFollowing, followDTO)
+            return@runTransaction
+        }
+
+        // 내가 팔로잉한 계정에 접근 하는 코드
+        var tsDocFollower = firestore?.collection("users")?.document(uid!!)     // 상대방 uid
+        firestore?.runTransaction {
+            var followDTO = it.get(tsDocFollower!!).toObject(FollowDTO::class.java)
+            if (followDTO == null) {
+                followDTO = FollowDTO()
+                followDTO!!.followerCount = 1  // 최초 값을 넣는거기 때문에 1이다
+                followDTO!!.followers[currentUserUid!!] = true  // 상대방 계정에 나의 uid를 넣는다. 잘 이해가 안된다
+
+                it.set(tsDocFollower, followDTO!!)  // db에 값 넣어주기
+                return@runTransaction
+            }
+
+            if (followDTO!!.followers.containsKey(currentUserUid)) {
+                // 내가 상대방을 팔로우를 했을때이기 때문에 팔로우를 취소하는 코드 작성
+                followDTO!!.followerCount = followDTO!!.followerCount - 1
+                followDTO!!.followers.remove(currentUserUid!!)  // 나의 uid를 삭제
+            } else {
+                // 내가 상대방을 팔로우를 안했을때
+                followDTO!!.followerCount = followDTO!!.followerCount + 1
+                followDTO!!.followers[currentUserUid!!] = true  // 나의 uid를 추가
+            }
+            it.set(tsDocFollower, followDTO!!)  // db에 값 저장
+            return@runTransaction
+        }
+
+
+    }
+
+    // 이미지를 서버에서 받아 오는 함수
+    fun getProfileImage() {
+        firestore?.collection("profileImages")?.document(uid!!)?.addSnapshotListener { snapshot, error ->
+            if (snapshot == null) return@addSnapshotListener
+            if (snapshot.data != null) {
+                var url = snapshot?.data!!["image"]
+                Glide.with(requireActivity()).load(url).apply(RequestOptions().circleCrop()).into(binding.accountIvProfile)
+            }
+        }
     }
 
     // fragment_user layout 의 recyclerView가 사용할 어댑터
