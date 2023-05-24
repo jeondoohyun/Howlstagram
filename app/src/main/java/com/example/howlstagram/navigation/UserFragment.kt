@@ -1,6 +1,7 @@
 package com.example.howlstagram.navigation
 
 import android.content.Intent
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -30,9 +32,9 @@ class UserFragment : Fragment{
 
 //    var fragmentView : View? = null
     var firestore : FirebaseFirestore? = null
-    var uid : String? = null    // uid가 계정마다 고유한 값인가??
+    var uid : String? = null    // 상대방 uid, uid가 계정마다 고유한 값인가??
     var auth : FirebaseAuth? = null
-    var currentUserUid : String? = null     // 내 계정인지 상대방 계정인지 판단하는 데이터
+    var currentUserUid : String? = null     // 내 계정 uid
 
     // static 변수 선언
     companion object {
@@ -85,7 +87,35 @@ class UserFragment : Fragment{
 
         }
         getProfileImage()
+        getFollowerAndFollowing()
         return binding.root
+    }
+
+    // 팔로우 카운트가 바뀌는 코드
+    fun getFollowerAndFollowing() {
+        // uid는 내 페이지에서는 내 uid이고 상대방 페이지에서는 상대방 uid이다
+        firestore?.collection("users")?.document(uid!!)?.addSnapshotListener { snapshot, error ->
+            if (snapshot == null) return@addSnapshotListener
+            var followDTO = snapshot.toObject(FollowDTO::class.java)
+            if (followDTO?.followingCount != null) {
+                binding.accountTvFollowingCount.text = followDTO?.followingCount?.toString()
+            }
+            if (followDTO?.followerCount != null) {
+                binding.accountTvFollowerCount.text = followDTO?.followerCount?.toString()
+
+                if (followDTO?.followers?.containsKey(currentUserUid!!)) {
+                    binding.accountBtnFollowSignout.text = getString(R.string.follow_cancel)
+                    binding.accountBtnFollowSignout.background?.setColorFilter(ContextCompat.getColor(requireActivity(), R.color.colorLightGray), PorterDuff.Mode.MULTIPLY)
+                } else {
+                    if (uid != currentUserUid) {    // 안정성을 위해 상대방 uid인지 한번더 확인
+                        binding.accountBtnFollowSignout.text = getString(R.string.follow)
+                        binding.accountBtnFollowSignout.background?.colorFilter = null      // 컬러 삭제
+                    }
+                }
+
+            }
+        }
+
     }
 
     fun requestFollow() {
@@ -102,7 +132,7 @@ class UserFragment : Fragment{
                 return@runTransaction
             }
 
-            if (followDTO.followings.containsKey(uid)) {
+            if (followDTO.followings.containsKey(uid)) {    // 내가한 팔로잉 목록에 상대방 uid가 있다면 내가 팔로잉했다는거니까 팔로우 취소 버튼을 누르는것.
                 // 내가 팔로우 한 상태이기 때문에 팔로잉을 해제
                 followDTO?.followingCount = followDTO?.followingCount - 1
                 followDTO?.followers?.remove(uid)   // 해당 uid를 리스트에서 삭제
