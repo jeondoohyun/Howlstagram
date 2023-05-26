@@ -27,7 +27,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 class UserFragment : Fragment{
     constructor() : super()
 
-    private var mBinding: FragmentUserBinding? = null
+    private var mBinding: FragmentUserBinding? = null   // layout xml파일명에 맞게 객체가 자동으로 생성되어 있음
     private val binding get() = mBinding!!
 
 //    var fragmentView : View? = null
