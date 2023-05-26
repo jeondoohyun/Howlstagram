@@ -19,6 +19,7 @@ import com.example.howlstagram.navigation.model.ContentDTO
 import com.google.firebase.firestore.FirebaseFirestore
 
 class GridFragment : Fragment{
+    // 2번째 바텀 네비게이션 검색 화면
     constructor() : super()
 
     private var mBinding: FragmentGridBinding? = null

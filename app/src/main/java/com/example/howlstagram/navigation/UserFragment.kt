@@ -25,6 +25,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class UserFragment : Fragment{
+    // 내 페이지화면, 5번째 바텀 네비게이션
     constructor() : super()
 
     private var mBinding: FragmentUserBinding? = null   // layout xml파일명에 맞게 객체가 자동으로 생성되어 있음
@@ -64,13 +65,13 @@ class UserFragment : Fragment{
         } else {        // 상대방 userFragment페이지
             binding.accountBtnFollowSignout?.text = getString(R.string.follow)
             var mainactivity = (activity as MainActivity)
-            mainactivity?.binding.toolbarUsername?.text = arguments?.getString("userId")
-            mainactivity?.binding.toolbarBtnBack?.setOnClickListener {
+            mainactivity?.binding?.toolbarUsername?.text = arguments?.getString("userId")
+            mainactivity?.binding?.toolbarBtnBack?.setOnClickListener {
                 mainactivity.binding.bottomNavigation.selectedItemId = R.id.action_home     // 바텀 네비게이션이 홈이 눌려지게 처리
             }
-            mainactivity?.binding.toolbarTitleImage?.visibility = View.GONE
-            mainactivity?.binding.toolbarUsername?.visibility = View.VISIBLE
-            mainactivity?.binding.toolbarBtnBack?.visibility = View.VISIBLE
+            mainactivity?.binding?.toolbarTitleImage?.visibility = View.GONE
+            mainactivity?.binding?.toolbarUsername?.visibility = View.VISIBLE
+            mainactivity?.binding?.toolbarBtnBack?.visibility = View.VISIBLE
             binding.accountBtnFollowSignout?.setOnClickListener {
                 requestFollow()
             }
@@ -103,7 +104,7 @@ class UserFragment : Fragment{
             if (followDTO?.followerCount != null) {
                 binding.accountTvFollowerCount.text = followDTO?.followerCount?.toString()
 
-                if (followDTO?.followers?.containsKey(currentUserUid!!)) {
+                if (followDTO?.followers?.containsKey(currentUserUid!!) == true) {
                     binding.accountBtnFollowSignout.text = getString(R.string.follow_cancel)
                     binding.accountBtnFollowSignout.background?.setColorFilter(ContextCompat.getColor(requireActivity(), R.color.colorLightGray), PorterDuff.Mode.MULTIPLY)
                 } else {
@@ -134,12 +135,12 @@ class UserFragment : Fragment{
 
             if (followDTO.followings.containsKey(uid)) {    // 내가한 팔로잉 목록에 상대방 uid가 있다면 내가 팔로잉했다는거니까 팔로우 취소 버튼을 누르는것.
                 // 내가 팔로우 한 상태이기 때문에 팔로잉을 해제
-                followDTO?.followingCount = followDTO?.followingCount - 1
+                followDTO?.followingCount = followDTO?.followingCount!! - 1
                 followDTO?.followers?.remove(uid)   // 해당 uid를 리스트에서 삭제
             } else {
                 // 팔로우 안한 상태라 팔로잉 하는 상태로 변경
-                followDTO?.followingCount = followDTO?.followingCount + 1
-                followDTO?.followers[uid!!] = true  // 리스트에 해당 uid 키 값에 대해 true로 저장
+                followDTO?.followingCount = followDTO?.followingCount!! + 1
+                followDTO?.followers!![uid!!] = true  // 리스트에 해당 uid 키 값에 대해 true로 저장
             }
             it.set(tsDocFollowing, followDTO)
             return@runTransaction

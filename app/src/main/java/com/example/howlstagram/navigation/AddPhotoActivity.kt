@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 class AddPhotoActivity : AppCompatActivity() {
-    // 사진 및 게시글을 서버로 업로드 하는 화면
+    // 사진 및 게시글을 서버로 업로드 하는 화면, 3번째 바텀 네비게이션
     
     var PICK_IMAGE_FROM_ALBUM = 0;
     var storage : FirebaseStorage? = null

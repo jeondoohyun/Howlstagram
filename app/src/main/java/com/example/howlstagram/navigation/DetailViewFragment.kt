@@ -1,5 +1,6 @@
 package com.example.howlstagram.navigation
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -18,6 +19,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
 class DetailViewFragment : Fragment{
+    // 홈에 팔로우 피드가 올라오는 화면, 1번째 바텀 네비게이션
     constructor() : super()
 
     var firestore : FirebaseFirestore? = null
@@ -119,6 +121,13 @@ class DetailViewFragment : Fragment{
                 activity?.supportFragmentManager?.beginTransaction()?.replace(R.id.main_content, fragment)?.commit()
             }
 
+            // 말풍선 아이콘 클릭하면 CommentActivity로 화면 전환
+            viewholder.detailviewitem_comment_imageview.setOnClickListener {
+                var intent = Intent(it.context, CommentActivity::class.java)
+                intent.putExtra("contentUid", contentUidList[position])
+                startActivity(intent)
+            }   // todo : 파이어베이스에 데이터 올라오는지 확인
+
         }
 
         override fun getItemCount(): Int {
@@ -133,11 +142,11 @@ class DetailViewFragment : Fragment{
                 var contentDTO = it.get(tsDoc!!).toObject(ContentDTO::class.java)   // ContentDTO로 캐스팅
 
                 if (contentDTO!!.favorites.containsKey(uid)) {  // 게시물의 좋아요가 눌러져 있는 상태일경우
-                    contentDTO?.favoriteCount = contentDTO?.favoriteCount - 1
-                    contentDTO?.favorites.remove(uid)   // 내가 좋아요 누른 게시물의 리스트. 좋아요 해제 한거니까 리스트에서도 해당 uid를 뺀다
+                    contentDTO?.favoriteCount = contentDTO?.favoriteCount!! - 1
+                    contentDTO?.favorites?.remove(uid)   // 내가 좋아요 누른 게시물의 리스트. 좋아요 해제 한거니까 리스트에서도 해당 uid를 뺀다
                 } else {    // 좋아요가 안눌러져 있는경우
-                    contentDTO?.favoriteCount = contentDTO?.favoriteCount + 1
-                    contentDTO?.favorites[uid!!] = true
+                    contentDTO?.favoriteCount = contentDTO?.favoriteCount!! + 1
+                    contentDTO?.favorites!![uid!!] = true
                 }
                 it.set(tsDoc, contentDTO)   // 이벤트 완료 한후 transaction을 서버로 다시 보낸다
 

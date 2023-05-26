@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import com.example.howlstagram.R
 
 class AlarmFragment : Fragment{
+    // 좋아요 관련 정보창 4번째 바텀 네비게이션
     constructor() : super()
 
 
