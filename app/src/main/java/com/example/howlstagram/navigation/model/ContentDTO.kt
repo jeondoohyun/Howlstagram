@@ -6,7 +6,7 @@ import java.util.*
 data class ContentDTO(var explain: String? = null,
                       var imageUrl: String? = null,
                       var uid: String? = null,  // 유저 식별자
-                      var userId: String? = null,
+                      var userId: String? = null,   // 이메일?
                       var timestamp: Long? = null,
                       var favoriteCount: Int = 0,
                       var favorites: MutableMap<String, Boolean> = HashMap(),

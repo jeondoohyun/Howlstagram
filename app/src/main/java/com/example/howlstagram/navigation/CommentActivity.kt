@@ -13,6 +13,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.howlstagram.R
 import com.example.howlstagram.databinding.ActivityCommentBinding
+import com.example.howlstagram.navigation.model.AlarmDTO
 import com.example.howlstagram.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -23,6 +24,7 @@ class CommentActivity : AppCompatActivity() {
     private val binding get() = mBinding!!
 
     var contentUid : String? = null
+    var destinationUid : String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -30,6 +32,7 @@ class CommentActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         contentUid = intent.getStringExtra("contentUid")
+        destinationUid = intent.getStringExtra("destinationUid")
 
         binding.commentRecyclerview.adapter = CommentRecyclerviewAdapter()
         binding.commentRecyclerview.layoutManager = LinearLayoutManager(this)
@@ -45,7 +48,24 @@ class CommentActivity : AppCompatActivity() {
             FirebaseFirestore.getInstance().collection("images").document(contentUid!!).collection("comments").document().set(comment)  // 파이어베이스 데이터베이스에 images 콜렉션 안에 contentUid로 된 다큐먼트안에 또다시 comments라는 콜렉션생성
 
             binding.commentEditMessage.setText("")
+
+            commentAlarm(destinationUid!!, binding.commentEditMessage.text.toString())
         }
+    }
+
+    fun commentAlarm(destinationUid : String, message : String) {
+        var alarmDTO = AlarmDTO()
+        alarmDTO.destinationUid = destinationUid
+        alarmDTO.userId = FirebaseAuth.getInstance().currentUser?.email
+        alarmDTO.uid = FirebaseAuth.getInstance().currentUser?.uid
+        alarmDTO.timeStamp = System.currentTimeMillis()
+        alarmDTO.message = message
+
+        // 파이어베이스에 위에서 세팅한 alarmDTO 객체 저장하기
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+
+
     }
 
     inner class CommentRecyclerviewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {

@@ -19,6 +19,7 @@ import com.example.howlstagram.LoginActivity
 import com.example.howlstagram.MainActivity
 import com.example.howlstagram.R
 import com.example.howlstagram.databinding.FragmentUserBinding
+import com.example.howlstagram.navigation.model.AlarmDTO
 import com.example.howlstagram.navigation.model.ContentDTO
 import com.example.howlstagram.navigation.model.FollowDTO
 import com.google.firebase.auth.FirebaseAuth
@@ -150,11 +151,12 @@ class UserFragment : Fragment{
         var tsDocFollower = firestore?.collection("users")?.document(uid!!)     // 상대방 uid
         firestore?.runTransaction {
             var followDTO = it.get(tsDocFollower!!).toObject(FollowDTO::class.java)
-            if (followDTO == null) {
+            if (followDTO == null) {    // 누군가가 최초로 팔로잉을 했을때
                 followDTO = FollowDTO()
                 followDTO!!.followerCount = 1  // 최초 값을 넣는거기 때문에 1이다
                 followDTO!!.followers[currentUserUid!!] = true  // 상대방 계정에 나의 uid를 넣는다. 잘 이해가 안된다
 
+                followerAlarm(uid!!)    // 누군가가 최초로 팔로잉 했을때도 알람이 눌리도록 한다.
                 it.set(tsDocFollower, followDTO!!)  // db에 값 넣어주기
                 return@runTransaction
             }
@@ -167,12 +169,25 @@ class UserFragment : Fragment{
                 // 내가 상대방을 팔로우를 안했을때
                 followDTO!!.followerCount = followDTO!!.followerCount + 1
                 followDTO!!.followers[currentUserUid!!] = true  // 나의 uid를 추가
+                followerAlarm(uid!!)
             }
             it.set(tsDocFollower, followDTO!!)  // db에 값 저장
             return@runTransaction
         }
 
 
+    }
+
+    fun followerAlarm(destinationUid : String) {
+        var alarmDTO = AlarmDTO()
+        alarmDTO.destinationUid = destinationUid
+        alarmDTO.userId = auth?.currentUser?.email
+        alarmDTO.uid = auth?.currentUser?.uid
+        alarmDTO.kind = 2
+        alarmDTO.timeStamp = System.currentTimeMillis()
+
+        // db에 저장
+        FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
     }
 
     // 이미지를 서버에서 받아 오는 함수

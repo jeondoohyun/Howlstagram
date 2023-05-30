@@ -2,6 +2,7 @@ package com.example.howlstagram.navigation
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +15,7 @@ import com.bumptech.glide.Glide
 import com.example.howlstagram.R
 import com.example.howlstagram.databinding.ActivityMainBinding
 import com.example.howlstagram.databinding.FragmentDetailBinding
+import com.example.howlstagram.navigation.model.AlarmDTO
 import com.example.howlstagram.navigation.model.ContentDTO
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -45,8 +47,8 @@ class DetailViewFragment : Fragment{
     // fragment_detail layout에 있는 recyclerView에서 사용할 어댑터 만들기
     inner class DetailViewRecyclerViewAdapter : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-        var contentDTOs : ArrayList<ContentDTO> = arrayListOf()
-        var contentUidList : ArrayList<String> = arrayListOf()
+        var contentDTOs : ArrayList<ContentDTO> = arrayListOf()     // home화면에 뜨는 모든 계시물?
+        var contentUidList : ArrayList<String> = arrayListOf()      // contentDTOs랑 무슨 차이지?
 
         init {
             firestore?.collection("images")?.orderBy("timestamp")?.addSnapshotListener { querySnapshot, error ->
@@ -101,6 +103,7 @@ class DetailViewFragment : Fragment{
 
             // 좋아요 버튼에 이벤트 달기
             viewholder.detailviewitem_favorite_imageview.setOnClickListener {
+                Log.e("로그확인","진입-1")
                 favoriteEvent(position)
             }
 
@@ -125,8 +128,9 @@ class DetailViewFragment : Fragment{
             viewholder.detailviewitem_comment_imageview.setOnClickListener {
                 var intent = Intent(it.context, CommentActivity::class.java)
                 intent.putExtra("contentUid", contentUidList[position])
+                intent.putExtra("destinationUid", contentDTOs[position].uid)
                 startActivity(intent)
-            }   // todo : 파이어베이스에 데이터 올라오는지 확인
+            }
 
         }
 
@@ -144,13 +148,26 @@ class DetailViewFragment : Fragment{
                 if (contentDTO!!.favorites.containsKey(uid)) {  // 게시물의 좋아요가 눌러져 있는 상태일경우
                     contentDTO?.favoriteCount = contentDTO?.favoriteCount!! - 1
                     contentDTO?.favorites?.remove(uid)   // 내가 좋아요 누른 게시물의 리스트. 좋아요 해제 한거니까 리스트에서도 해당 uid를 뺀다
-                } else {    // 좋아요가 안눌러져 있는경우
+                } else {    // 좋아요가 안눌러져 있는경우, 좋아요 카운트가 하나 증가
                     contentDTO?.favoriteCount = contentDTO?.favoriteCount!! + 1
                     contentDTO?.favorites!![uid!!] = true
+                    favoriteAlarm(contentDTOs[position].uid!!)  // contentDTO는 바로 위에서 데이터를 받은 객체 이고, contentDTOs는 뭐지?
                 }
                 it.set(tsDoc, contentDTO)   // 이벤트 완료 한후 transaction을 서버로 다시 보낸다
-
             }
+        }
+
+        fun favoriteAlarm(destinationUid : String) {
+            var alarmDTO = AlarmDTO()
+            alarmDTO.destinationUid = destinationUid
+            alarmDTO.userId = FirebaseAuth.getInstance().currentUser?.email
+            alarmDTO.uid = FirebaseAuth.getInstance().currentUser?.uid
+            alarmDTO.kind = 0
+            alarmDTO.timeStamp = System.currentTimeMillis()
+
+            // 파이어 스토어에 위에서 세팅한 alarmDTO 데이터값을 넣어준다. alarms라는 컬렉션을 만들어 그 안에 저장한다.
+            FirebaseFirestore.getInstance().collection("alarms").document().set("alarmDTO")
+
 
         }
 
