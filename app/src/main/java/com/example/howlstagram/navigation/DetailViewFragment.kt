@@ -103,7 +103,6 @@ class DetailViewFragment : Fragment{
 
             // 좋아요 버튼에 이벤트 달기
             viewholder.detailviewitem_favorite_imageview.setOnClickListener {
-                Log.e("로그확인","진입-1")
                 favoriteEvent(position)
             }
 
@@ -140,34 +139,48 @@ class DetailViewFragment : Fragment{
 
         fun favoriteEvent(position : Int) {
             var tsDoc = firestore?.collection("images")?.document(contentUidList[position])     // 내가 선택한 게시물(컨텐츠)의 uid를 받아와서 좋아요 눌러주는 이벤트
+
+            Log.e("로그확인","진입-1")
             
             // 데이터를 불러 오기 위해서는 Transaction을 불러 와야함
             firestore?.runTransaction {
                 var contentDTO = it.get(tsDoc!!).toObject(ContentDTO::class.java)   // ContentDTO로 캐스팅
+                Log.e("로그확인","진입-2")
 
                 if (contentDTO!!.favorites.containsKey(uid)) {  // 게시물의 좋아요가 눌러져 있는 상태일경우
+                    Log.e("로그확인","진입-3")
                     contentDTO?.favoriteCount = contentDTO?.favoriteCount!! - 1
                     contentDTO?.favorites?.remove(uid)   // 내가 좋아요 누른 게시물의 리스트. 좋아요 해제 한거니까 리스트에서도 해당 uid를 뺀다
+
                 } else {    // 좋아요가 안눌러져 있는경우, 좋아요 카운트가 하나 증가
+                    Log.e("로그확인","진입-4")
                     contentDTO?.favoriteCount = contentDTO?.favoriteCount!! + 1
                     contentDTO?.favorites!![uid!!] = true
                     favoriteAlarm(contentDTOs[position].uid!!)  // contentDTO는 바로 위에서 데이터를 받은 객체 이고, contentDTOs는 뭐지?
                 }
+                Log.e("로그확인","진입-5")
                 it.set(tsDoc, contentDTO)   // 이벤트 완료 한후 transaction을 서버로 다시 보낸다
             }
         }
 
         fun favoriteAlarm(destinationUid : String) {
+            Log.e("로그확인","진입-41")
             var alarmDTO = AlarmDTO()
+            Log.e("로그확인","진입-42")
             alarmDTO.destinationUid = destinationUid
+            Log.e("로그확인","진입-43 $destinationUid")
             alarmDTO.userId = FirebaseAuth.getInstance().currentUser?.email
+            Log.e("로그확인","진입-44 ${alarmDTO.userId}")
             alarmDTO.uid = FirebaseAuth.getInstance().currentUser?.uid
+            Log.e("로그확인","진입-45 ${alarmDTO.uid}")
             alarmDTO.kind = 0
+            Log.e("로그확인","진입-46")
             alarmDTO.timeStamp = System.currentTimeMillis()
+            Log.e("로그확인","진입-47 ${alarmDTO.timeStamp}")
 
             // 파이어 스토어에 위에서 세팅한 alarmDTO 데이터값을 넣어준다. alarms라는 컬렉션을 만들어 그 안에 저장한다.
-            FirebaseFirestore.getInstance().collection("alarms").document().set("alarmDTO")
-
+            FirebaseFirestore.getInstance().collection("alarms").document().set("alarmDTO") // todo : 여기가 안됨
+            Log.e("로그확인","진입-48")
 
         }
 
