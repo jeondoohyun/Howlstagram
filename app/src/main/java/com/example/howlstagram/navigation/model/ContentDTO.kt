@@ -5,7 +5,7 @@ import java.util.*
 // data class (VO 클래스), dto : data transfer object
 data class ContentDTO(var explain: String? = null,
                       var imageUrl: String? = null,
-                      var uid: String? = null,  // 유저 식별자, 각 이메일마다 부여되는 uid
+                      var uid: String? = null,  // 유저 식별자, 각 이메일마다 부여되는 uid, 파이어베이스 콘솔에서 Authentication에 들어가면 사용자uid 확인가능 
                       var userId: String? = null,   // 이메일
                       var timestamp: Long? = null,
                       var favoriteCount: Int = 0,

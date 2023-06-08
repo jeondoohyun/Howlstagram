@@ -9,6 +9,7 @@ import android.view.MenuItem
 import android.view.View
 import com.example.howlstagram.databinding.ActivityMainBinding
 import com.example.howlstagram.navigation.*
+import com.example.howlstagram.navigation.util.FcmPush
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
@@ -75,6 +76,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         binding.toolbarUsername.visibility = View.GONE
         binding.toolbarBtnBack.visibility = View.GONE
         binding.toolbarTitleImage.visibility = View.VISIBLE
+    }
+
+    override fun onStop() {
+        super.onStop()
+        FcmPush.instance.sendMessage("GQ0nSBojNsM8pCWaufRZogCQeWF3", "hi", "bye")
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
