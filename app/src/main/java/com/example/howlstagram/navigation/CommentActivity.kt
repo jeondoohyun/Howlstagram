@@ -15,6 +15,7 @@ import com.example.howlstagram.R
 import com.example.howlstagram.databinding.ActivityCommentBinding
 import com.example.howlstagram.navigation.model.AlarmDTO
 import com.example.howlstagram.navigation.model.ContentDTO
+import com.example.howlstagram.navigation.util.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -65,7 +66,9 @@ class CommentActivity : AppCompatActivity() {
         // 파이어베이스에 위에서 세팅한 alarmDTO 객체 저장하기
         FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
 
-
+        // fcm 전송
+        var msg = FirebaseAuth.getInstance().currentUser?.email + getString(R.string.alarm_comment) + " of" + message
+        FcmPush.instance.sendMessage(destinationUid, "Howlsta", msg)
 
     }
 

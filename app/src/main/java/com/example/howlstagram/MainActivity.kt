@@ -78,10 +78,11 @@ class MainActivity : AppCompatActivity(), BottomNavigationView.OnNavigationItemS
         binding.toolbarTitleImage.visibility = View.VISIBLE
     }
 
-    override fun onStop() {
-        super.onStop()
-        FcmPush.instance.sendMessage("GQ0nSBojNsM8pCWaufRZogCQeWF3", "hi", "bye")
-    }
+    // 앱이 백그라운드 처리 됫을때 푸시가 잘오는지 확인 하기 위함. 버튼 대신 만들어놓음
+//    override fun onStop() {
+//        super.onStop()
+//        FcmPush.instance.sendMessage("GQ0nSBojNsM8pCWaufRZogCQeWF3", "hi", "bye")
+//    }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)

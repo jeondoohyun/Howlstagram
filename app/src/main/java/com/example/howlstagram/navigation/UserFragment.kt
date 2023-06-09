@@ -22,6 +22,7 @@ import com.example.howlstagram.databinding.FragmentUserBinding
 import com.example.howlstagram.navigation.model.AlarmDTO
 import com.example.howlstagram.navigation.model.ContentDTO
 import com.example.howlstagram.navigation.model.FollowDTO
+import com.example.howlstagram.navigation.util.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -188,6 +189,10 @@ class UserFragment : Fragment{
 
         // db에 저장
         FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+        // fcm 메세지 전송
+        var message = auth?.currentUser?.email + getString(R.string.alarm_follow)
+        FcmPush.instance.sendMessage(destinationUid, "Howlsta", message)
     }
 
     // 이미지를 서버에서 받아 오는 함수

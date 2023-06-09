@@ -17,6 +17,7 @@ import com.example.howlstagram.databinding.ActivityMainBinding
 import com.example.howlstagram.databinding.FragmentDetailBinding
 import com.example.howlstagram.navigation.model.AlarmDTO
 import com.example.howlstagram.navigation.model.ContentDTO
+import com.example.howlstagram.navigation.util.FcmPush
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 
@@ -166,7 +167,11 @@ class DetailViewFragment : Fragment{
             alarmDTO.timeStamp = System.currentTimeMillis()
 
             // 파이어 스토어에 위에서 세팅한 alarmDTO 데이터값을 넣어준다. alarms라는 컬렉션을 만들어 그 안에 저장한다.
-            FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO) //
+            FirebaseFirestore.getInstance().collection("alarms").document().set(alarmDTO)
+
+            // 좋아요 버튼을 눌렀을때 fcm 푸시가 보내지도록 함
+            var message = FirebaseAuth.getInstance()?.currentUser?.email + getString(R.string.alarm_favorite)
+            FcmPush.instance.sendMessage(destinationUid, "Howlsta", message)
 
         }
 
