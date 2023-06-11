@@ -83,6 +83,7 @@ class LoginActivity : AppCompatActivity() {
             facebookLogin()
         }
 
+        // 구글 로그인 빌드
         var gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(getString(R.string.default_web_client_id))  // default_web_client_id를 찾지 못한다면 경로에 직접 가서 string.xml파일에 복붙한다. C:\AndroidProject\Project\Howlstagram\app\build\generated\res\google-services\debug\values\values.xml
             .requestEmail()
@@ -141,7 +142,11 @@ class LoginActivity : AppCompatActivity() {
             Log.e("구글로그인_2","${result!!.isSuccess}, $data")
             if(result!!.isSuccess){   // 응답 받은 결과값이 성공 했을때      // todo : 응답 값 false 뜸, 수정 할것, 네비게이션바 클릭된 아이콘 연하게 되있는데 진하게 처리하기, 구글 및 페이스북 같은 외부 플랫폼 로그인 사용할때 로그인 반응 안하는 문제 원인이 뭔지 확실하게 정리 할것
                 var account = result.signInAccount
+                
+                // 구글 계정이 확인이 되면 파이어베이스로 넘김
                 firebaseAuthWithGoogle(account)
+            } else {
+                Log.e("구글로그인_3","${result!!.status}, $data")    // todo : 구글 로그인, 페이스북 로그인 방식이 새로 변경 됬는지 확인할것, statusCode=DEVELOPER_ERROR 가 뜬다
             }
         }
     }

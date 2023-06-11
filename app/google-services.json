@@ -14,6 +14,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "35133210071-aufrmji4fgqmtus4ruefeadtud6hsegc.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.howlstagram",
+            "certificate_hash": "94d7fdf34c8b435b84dd96865172a6267d6dc684"
+          }
+        },
+        {
+          "client_id": "35133210071-b60pj7pm1t1oqgjfr26v5h235u1lgq8g.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.howlstagram",
+            "certificate_hash": "3beb68d771a84d5937e96834b05a90c39cb12f03"
+          }
+        },
+        {
           "client_id": "35133210071-08k4h98u8jtimejbh254eea5ec65dr0b.apps.googleusercontent.com",
           "client_type": 3
         }
