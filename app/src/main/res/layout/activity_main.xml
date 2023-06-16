@@ -75,7 +75,9 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:backgroundTint="@color/colorWhite"
-            app:menu="@menu/bottom_navigation_main">
+            app:menu="@menu/bottom_navigation_main"
+            app:itemIconTint="@drawable/bottom_icon_color"
+            app:itemTextColor="@drawable/bottom_icon_color">   <!--todo -->
 
         </com.google.android.material.bottomnavigation.BottomNavigationView>
 

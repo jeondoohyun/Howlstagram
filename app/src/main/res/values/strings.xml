@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Howlstagram</string>
-    <string name="facebook_app_id">361799515331742</string>
-    <string name="fb_login_protocol_scheme">fb361799515331742</string>
+    <string name="facebook_app_id">776373810611703</string>
+    <string name="fb_login_protocol_scheme">fb776373810611703</string>
+    <string name="facebook_client_token">1220fcf8de64a114dee8acd636267467</string>
     <string name="com.twitter.sdk.android.CONSUMER_KEY">0lY6xdMc8l3Bgkdep8DvfPxe4</string>
     <string name="com.twitter.sdk.android.CONSUMER_SECRET">2Uov8wp8sQWccy1oRRes7Q3VgWfsTE1tokYHblse9TTaF0BW1b</string>
 
